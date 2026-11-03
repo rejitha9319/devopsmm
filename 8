@@ -1,0 +1,82 @@
+
+sudo apt update
+sudo apt upgrade -y
+sudo apt install -y software-properties-common
+sudo add-apt-repository --yes --update ppa:ansible/ansible
+sudo apt install -y ansible
+
+sudo apt install -y locales
+sudo locale-gen en_US.UTF-8
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+ansible --version
+
+cd /etc/ansible
+ls -la
+
+echo "localhost ansible_connection=local" | sudo tee -a /etc/ansible/hosts
+
+sudo mkdir -p /etc/ansible/roles
+cd /etc/ansible/roles
+
+sudo ansible-galaxy init prerequisites
+sudo ansible-galaxy init postgresql
+sudo ansible-galaxy init apache
+
+ls
+
+sudo apt install -y tree
+tree /etc/ansible/roles
+
+sudo tee /etc/ansible/roles/prerequisites/tasks/main.yml > /dev/null <<'EOF'
+---
+- name: Install git
+  apt:
+    name: git
+    state: present
+    update_cache: yes
+EOF
+
+sudo tee /etc/ansible/roles/postgresql/tasks/main.yml > /dev/null <<'EOF'
+---
+- name: Install PostgreSQL
+  apt:
+    name: postgresql
+    state: present
+    update_cache: yes
+
+- name: Start PostgreSQL service
+  systemd:
+    name: postgresql
+    state: started
+    enabled: yes
+EOF
+
+sudo tee /etc/ansible/roles/apache/tasks/main.yml > /dev/null <<'EOF'
+---
+- name: Install Apache web server
+  apt:
+    name: apache2
+    state: present
+    update_cache: yes
+EOF
+
+sudo tee /etc/ansible/stack.yml > /dev/null <<'EOF'
+---
+- hosts: localhost
+  become: true
+  roles:
+    - prerequisites
+    - postgresql
+    - apache
+EOF
+
+cd /etc/ansible
+sudo ansible-playbook -i hosts stack.yml
+
+git --version
+apache2 -v
+sudo systemctl status postgresql --no-pager
+pg_lsclusters
+sudo -u postgres psql -c "SELECT version();"
