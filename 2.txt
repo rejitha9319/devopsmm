@@ -1,0 +1,34 @@
+intellij src test java org.example MainTest.java creation
+package org.example;
+import org.junit.Test;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import static org.junit.Assert.assertEquals;
+public class MainTest {
+@Test
+public void testMainMethod() {
+// Redirect standard output to capture console output
+ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+System.setOut(new PrintStream(outContent));
+// Call the main method
+Main.main(new String[]{});
+// Check if &quot;Hello and welcome!&quot; was printed
+assertEquals(&quot;Hello and welcome!&quot;, outContent.toString().trim());
+// Reset standard output
+System.setOut(System.out);
+
+}
+}
+
+pom.xml 
+<dependencies>
+    <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.13.2</version>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
+repo creation
+git push 
+azure
