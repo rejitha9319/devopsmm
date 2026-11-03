@@ -1,0 +1,6 @@
+create main.java in srcmain java 
+mvn compile
+mvn package
+git repo
+git push
+azure pipeline
