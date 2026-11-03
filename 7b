@@ -1,0 +1,58 @@
+intellij
+create main.java
+create doc in buld within it create html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Simple Website</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <img src="logo.png" alt="Logo">
+    </header>
+
+    <h1>Welcome to My Simple Website</h1>
+
+</body>
+</html>
+change build.gradle
+
+plugins {
+    id 'java'
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.seleniumhq.selenium:selenium-java:4.34.0'
+    testImplementation 'org.testng:testng:7.10.2'
+}
+
+application {
+    mainClass = 'org.example.Main'
+}
+
+test {
+    useTestNG()
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'org.example.Main'
+    }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+git push
+git pages
