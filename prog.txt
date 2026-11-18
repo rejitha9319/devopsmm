@@ -271,6 +271,23 @@ File: pom.xml additions
 Run the tests and package the application with:
 mvn clean test package
 Part 3 – Jenkins Java applications
+pom.xml
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example</groupId>
+    <artifactId>MavenStudentProject</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+    </properties>
+
+</project>
 9. Gross salary calculation
 File: Main.java
 import java.util.Scanner;
