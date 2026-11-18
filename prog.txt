@@ -1,0 +1,567 @@
+Part 1 – Maven projects with Azure Pipeline
+1. Student marks and grade calculation
+File: Main.java
+import java.util.Scanner;
+public class Main {
+ public static void main(String[] args) {
+ Scanner sc = new Scanner(System.in);
+ System.out.print("Enter marks in three subjects: ");
+ int m1 = sc.nextInt();
+ int m2 = sc.nextInt();
+ int m3 = sc.nextInt();
+ double avg = (m1 + m2 + m3) / 3.0;
+ System.out.println("Average: " + avg);
+ if (avg >= 90)
+ System.out.println("Grade: A");
+ else if (avg >= 75)
+ System.out.println("Grade: B");
+ else if (avg >= 50)
+ System.out.println("Grade: C");
+ else
+ System.out.println("Grade: F");
+ }
+}
+
+
+
+2. Electricity bill calculation
+File: Main.java
+import java.util.Scanner;
+public class Main {
+ public static void main(String[] args) {
+ Scanner sc = new Scanner(System.in);
+ System.out.print("Enter units consumed: ");
+ int units = sc.nextInt();
+ if (units < 0) {
+ System.out.println("Units cannot be negative.");
+ return;
+ }
+ double bill;
+ if (units <= 100)
+ bill = units * 1.50;
+ else if (units <= 200)
+ bill = 100 * 1.50 + (units - 100) * 2.50;
+ else
+ bill = 100 * 1.50 + 100 * 2.50
+ + (units - 200) * 4.00;
+ System.out.println("Electricity Bill: Rs. " + bill);
+ }
+}
+
+
+
+3. Simple interest calculation
+File: Main.java
+import java.util.Scanner;
+public class Main {
+ public static void main(String[] args) {
+ Scanner sc = new Scanner(System.in);
+ System.out.print("Enter principal: ");
+ double p = sc.nextDouble();
+ System.out.print("Enter rate: ");
+ double r = sc.nextDouble();
+Java & DevOps Practical Programs Page 3
+ System.out.print("Enter time: ");
+ double t = sc.nextDouble();
+ double si = (p * r * t) / 100;
+ System.out.println("Simple Interest: " + si);
+ }
+}
+
+
+
+4. Area of a circle
+File: Main.java
+import java.util.Scanner;
+public class Main {
+ public static void main(String[] args) {
+ Scanner sc = new Scanner(System.in);
+ System.out.print("Enter radius: ");
+ double r = sc.nextDouble();
+ double area = Math.PI * r * r;
+ System.out.println("Area of Circle: " + area);
+ }
+}
+
+
+Azure Pipeline YAML for Maven build and JAR artifact
+File: azure-pipelines.yml (save in the repository root). This pipeline runs Maven clean package and publishes the target
+directory as a build artifact.
+File: azure-pipelines.yml
+trigger:
+- main
+pool:
+ vmImage: 'ubuntu-latest'
+steps:
+- task: Maven@4
+ inputs:
+ mavenPomFile: 'pom.xml'
+ goals: 'clean package'
+- task: PublishBuildArtifacts@1
+ inputs:
+ PathtoPublish: 'target'
+ ArtifactName: 'JAR'
+ publishLocation: 'Container'
+
+ 
+Part 2 – Maven projects with JUnit testing
+5. Calculator application
+File: Calculator.java
+Place in src/main/java. The test class below belongs in src/test/java.
+public class Calculator {
+ public int add(int a, int b) {
+ return a + b;
+ }
+ public int subtract(int a, int b) {
+ return a - b;
+ }
+ public int multiply(int a, int b) {
+ return a * b;
+ }
+ public int divide(int a, int b) {
+ if (b == 0)
+ throw new ArithmeticException("Division by zero");
+ return a / b;
+Java & DevOps Practical Programs Page 4
+ }
+}
+5. Calculator JUnit tests
+File: CalculatorTest.java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+public class CalculatorTest {
+ Calculator c = new Calculator();
+ @Test
+ void testAddition() {
+ assertEquals(10, c.add(5, 5));
+ }
+ @Test
+ void testSubtraction() {
+ assertEquals(5, c.subtract(10, 5));
+ }
+ @Test
+ void testMultiplication() {
+ assertEquals(25, c.multiply(5, 5));
+ }
+ @Test
+ void testDivision() {
+ assertEquals(5, c.divide(25, 5));
+ }
+ @Test
+ void testDivisionByZero() {
+ assertThrows(ArithmeticException.class,
+ () -> c.divide(10, 0));
+ }
+}
+6. Student pass/fail application
+File: Student.java
+public class Student {
+ public String checkResult(int marks) {
+ if (marks >= 50)
+ return "Pass";
+ else
+ return "Fail";
+ }
+}
+6. Student pass/fail JUnit tests
+File: StudentTest.java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+public class StudentTest {
+ Student s = new Student();
+ @Test
+ void test35() {
+ assertEquals("Fail", s.checkResult(35));
+ }
+ @Test
+ void test50() {
+ assertEquals("Pass", s.checkResult(50));
+ }
+ @Test
+ void test75() {
+ assertEquals("Pass", s.checkResult(75));
+ }
+ @Test
+Java & DevOps Practical Programs Page 5
+ void test100() {
+ assertEquals("Pass", s.checkResult(100));
+ }
+}
+7. Leap year application
+File: LeapYear.java
+public class LeapYear {
+ public boolean checkYear(int year) {
+ return (year % 400 == 0) ||
+ (year % 4 == 0 && year % 100 != 0);
+ }
+}
+7. Leap year JUnit tests
+File: LeapYearTest.java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+public class LeapYearTest {
+ LeapYear l = new LeapYear();
+ @Test
+ void testLeapYear() {
+ assertTrue(l.checkYear(2024));
+ }
+ @Test
+ void testNonLeapYear() {
+ assertFalse(l.checkYear(2023));
+ }
+ @Test
+ void testCenturyLeapYear() {
+ assertTrue(l.checkYear(2000));
+ }
+ @Test
+ void testCenturyNonLeapYear() {
+ assertFalse(l.checkYear(1900));
+ }
+}
+8. Purchase discount application
+File: Discount.java
+public class Discount {
+ public double calculate(double amount) {
+ if (amount >= 1000)
+ return amount - (amount * 0.10);
+ else
+ return amount;
+ }
+}
+8. Purchase discount JUnit tests
+File: DiscountTest.java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+public class DiscountTest {
+ Discount d = new Discount();
+ @Test
+ void testBelow1000() {
+ assertEquals(900, d.calculate(900), 0.001);
+ }
+ @Test
+ void testEqual1000() {
+ assertEquals(900, d.calculate(1000), 0.001);
+ }
+Java & DevOps Practical Programs Page 6
+ @Test
+ void testAbove1000() {
+ assertEquals(1350, d.calculate(1500), 0.001);
+ }
+}
+JUnit dependency and Maven test configuration
+Add these entries inside the IntelliJ-generated pom.xml. If a dependencies or build/plugins section already exists, add the
+entries inside the existing section rather than creating duplicate sections.
+File: pom.xml additions
+<dependencies>
+ <dependency>
+ <groupId>org.junit.jupiter</groupId>
+ <artifactId>junit-jupiter</artifactId>
+ <version>5.10.2</version>
+ <scope>test</scope>
+ </dependency>
+</dependencies>
+<build>
+ <plugins>
+ <plugin>
+ <groupId>org.apache.maven.plugins</groupId>
+ <artifactId>maven-surefire-plugin</artifactId>
+ <version>3.2.5</version>
+ </plugin>
+ </plugins>
+</build>
+Run the tests and package the application with:
+mvn clean test package
+Part 3 – Jenkins Java applications
+9. Gross salary calculation
+File: Main.java
+import java.util.Scanner;
+public class Main {
+ public static void main(String[] args) {
+ Scanner sc = new Scanner(System.in);
+ System.out.print("Enter basic salary: ");
+ double basic = sc.nextDouble();
+ System.out.print("Enter HRA: ");
+ double hra = sc.nextDouble();
+ System.out.print("Enter DA: ");
+ double da = sc.nextDouble();
+ double gross = basic + hra + da;
+ System.out.println("Gross Salary: " + gross);
+ }
+}
+10. Positive, negative or zero
+File: Main.java
+import java.util.Scanner;
+public class Main {
+ public static void main(String[] args) {
+ Scanner sc = new Scanner(System.in);
+ System.out.print("Enter a number: ");
+ int n = sc.nextInt();
+ if (n > 0)
+ System.out.println("Positive");
+Java & DevOps Practical Programs Page 7
+ else if (n < 0)
+ System.out.println("Negative");
+ else
+ System.out.println("Zero");
+ }
+}
+11. Palindrome number
+File: Main.java
+import java.util.Scanner;
+public class Main {
+ public static void main(String[] args) {
+ Scanner sc = new Scanner(System.in);
+ System.out.print("Enter a number: ");
+ int n = sc.nextInt();
+ int original = n;
+ int reverse = 0;
+ while (n > 0) {
+ int digit = n % 10;
+ reverse = reverse * 10 + digit;
+ n = n / 10;
+ }
+ if (original >= 0 && original == reverse)
+ System.out.println("Palindrome");
+ else
+ System.out.println("Not Palindrome");
+ }
+}
+12. Prime number
+File: Main.java
+import java.util.Scanner;
+public class Main {
+ public static void main(String[] args) {
+ Scanner sc = new Scanner(System.in);
+ System.out.print("Enter a number: ");
+ int n = sc.nextInt();
+ boolean prime = n > 1;
+ for (int i = 2; i <= n / i; i++) {
+ if (n % i == 0) {
+ prime = false;
+ break;
+ }
+ }
+ if (prime)
+ System.out.println("Prime Number");
+ else
+ System.out.println("Not a Prime Number");
+ }
+}
+13. Factorial using loop
+File: Main.java
+import java.util.Scanner;
+public class Main {
+ public static void main(String[] args) {
+ Scanner sc = new Scanner(System.in);
+ System.out.print("Enter a number (0 to 20): ");
+ int n = sc.nextInt();
+ if (n < 0 || n > 20) {
+Java & DevOps Practical Programs Page 8
+ System.out.println("Invalid input");
+ return;
+ }
+ long fact = 1;
+ for (int i = 1; i <= n; i++) {
+ fact = fact * i;
+ }
+ System.out.println("Factorial: " + fact);
+ }
+}
+14. Fibonacci series
+File: Main.java
+import java.util.Scanner;
+public class Main {
+ public static void main(String[] args) {
+ Scanner sc = new Scanner(System.in);
+ System.out.print("Enter number of terms: ");
+ int n = sc.nextInt();
+ int a = 0, b = 1;
+ for (int i = 1; i <= n; i++) {
+ System.out.print(a + " ");
+ int c = a + b;
+ a = b;
+ b = c;
+ }
+ }
+}
+15. Multiplication table
+File: Main.java
+import java.util.Scanner;
+public class Main {
+ public static void main(String[] args) {
+ Scanner sc = new Scanner(System.in);
+ System.out.print("Enter a number: ");
+ int n = sc.nextInt();
+ for (int i = 1; i <= 10; i++) {
+ System.out.println(n + " x " + i + " = " + (n * i));
+ }
+ }
+}
+16. Sum of five integers using array
+File: Main.java
+import java.util.Scanner;
+public class Main {
+ public static void main(String[] args) {
+ Scanner sc = new Scanner(System.in);
+ int[] a = new int[5];
+ int sum = 0;
+ System.out.println("Enter five numbers:");
+ for (int i = 0; i < 5; i++) {
+ a[i] = sc.nextInt();
+ sum += a[i];
+ }
+ System.out.println("Sum: " + sum);
+ }
+}
+17. Largest of three numbers
+Java & DevOps Practical Programs Page 9
+File: Main.java
+import java.util.Scanner;
+public class Main {
+ public static void main(String[] args) {
+ Scanner sc = new Scanner(System.in);
+ System.out.print("Enter three numbers: ");
+ int a = sc.nextInt();
+ int b = sc.nextInt();
+ int c = sc.nextInt();
+ int largest = a;
+ if (b > largest)
+ largest = b;
+ if (c > largest)
+ largest = c;
+ System.out.println("Largest: " + largest);
+ }
+}
+18. Celsius to Fahrenheit
+File: Main.java
+import java.util.Scanner;
+public class Main {
+ public static void main(String[] args) {
+ Scanner sc = new Scanner(System.in);
+ System.out.print("Enter Celsius: ");
+ double c = sc.nextDouble();
+ double f = (c * 9 / 5) + 32;
+ System.out.println("Fahrenheit: " + f);
+ }
+}
+Part 4 – Gradle Java applications
+19. Simple interest using Gradle
+File: Main.java
+import java.util.Scanner;
+public class Main {
+ public static void main(String[] args) {
+ Scanner sc = new Scanner(System.in);
+ System.out.print("Enter principal: ");
+ double p = sc.nextDouble();
+ System.out.print("Enter rate: ");
+ double r = sc.nextDouble();
+ System.out.print("Enter time: ");
+ double t = sc.nextDouble();
+ double si = (p * r * t) / 100;
+ System.out.println("Simple Interest: " + si);
+ }
+}
+20. Average of five numbers using array
+File: Main.java
+import java.util.Scanner;
+public class Main {
+ public static void main(String[] args) {
+ Scanner sc = new Scanner(System.in);
+ int[] a = new int[5];
+Java & DevOps Practical Programs Page 10
+ int sum = 0;
+ System.out.println("Enter five numbers:");
+ for (int i = 0; i < 5; i++) {
+ a[i] = sc.nextInt();
+ sum += a[i];
+ }
+ double avg = sum / 5.0;
+ System.out.println("Average: " + avg);
+ }
+}
+21. Vowel or consonant
+File: Main.java
+import java.util.Scanner;
+public class Main {
+ public static void main(String[] args) {
+ Scanner sc = new Scanner(System.in);
+ System.out.print("Enter an alphabet: ");
+ char ch = Character.toLowerCase(sc.next().charAt(0));
+ if (ch < 'a' || ch > 'z') {
+ System.out.println("Invalid character");
+ } else if (ch == 'a' || ch == 'e' || ch == 'i'
+ || ch == 'o' || ch == 'u') {
+ System.out.println("Vowel");
+ } else {
+ System.out.println("Consonant");
+ }
+ }
+}
+22. Area and perimeter of rectangle
+File: Main.java
+import java.util.Scanner;
+public class Main {
+ public static void main(String[] args) {
+ Scanner sc = new Scanner(System.in);
+ System.out.print("Enter length: ");
+ double l = sc.nextDouble();
+ System.out.print("Enter breadth: ");
+ double b = sc.nextDouble();
+ double area = l * b;
+ double perimeter = 2 * (l + b);
+ System.out.println("Area: " + area);
+ System.out.println("Perimeter: " + perimeter);
+ }
+}
+Part 5 – Ansible programs
+23. Apache installation and HTML deployment
+File: index.html
+<!DOCTYPE html>
+<html>
+<head>
+ <title>Welcome</title>
+</head>
+<body>
+ <h1>Welcome to Apache Web Server</h1>
+ <p>Successfully deployed using Ansible.</p>
+</body>
+</html>
+Java & DevOps Practical Programs Page 11
+24. Ansible playbook using modules
+File: app.yml
+Run from the directory containing app.yml and index.html: ansible-playbook app.yml. This example is for Debian/Ubuntu
+systems.
+---
+- name: Simple Application Setup
+ hosts: localhost
+ connection: local
+ become: yes
+ tasks:
+ - name: Install Apache
+ apt:
+ name: apache2
+ state: present
+ update_cache: yes
+ - name: Start Apache
+ service:
+ name: apache2
+ state: started
+ enabled: yes
+ - name: Deploy HTML page
+ copy:
+ src: index.html
+ dest: /var/www/html/index.html
+ - name: Verify application
+ uri:
+ url: http://localhost
+ status_code: 200
+Build and execution quick reference
+Maven: mvn clean package — compiles, tests (if configured), and packages a JAR in target/.
+Maven tests: mvn clean test package.
+Gradle: gradle clean build — builds and tests the Gradle project; JAR is normally in build/libs/.
+Ansible: ansible-playbook app.yml.
+Project organization reminder
+Do not put all classes named Main into one Java project. Each numbered standalone exercise should have its own project
+or a distinct package/class name. In Maven projects, Java source goes under src/main/java and JUnit test source goes
+under src/test/java. In a Maven JAR, a Main class is not automatically executable with java -jar unless a Main-Class
+manifest entry is configured; the pipeline here builds and publishes the JAR artifact as requested.
