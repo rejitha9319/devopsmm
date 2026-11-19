@@ -90,38 +90,25 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/USERNAME/REPOSITORY.git'
+                git 'https://github.com/TARINI-A/ex4.git'
             }
         }
 
         stage('Build') {
             steps {
-                sh 'javac Program.java'
+                sh 'mvn clean compile'
             }
         }
 
-        stage('Test / Execute') {
+        stage('Test') {
             steps {
-                sh 'echo 5 | java Program'
+                sh 'mvn test'
             }
         }
 
         stage('Package') {
             steps {
-                sh 'jar cfe Program.jar Program Program.class'
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                sh 'mkdir -p deployment'
-                sh 'cp Program.jar deployment/'
-            }
-        }
-
-        stage('Run Deployed Application') {
-            steps {
-                sh 'echo 5 | java -jar deployment/Program.jar'
+                sh 'mvn package'
             }
         }
     }
