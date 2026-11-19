@@ -1,0 +1,142 @@
+1.Create the Java project
+mkdir PrimeNumber
+cd PrimeNumber
+nano PrimeNumber.java
+
+program:
+
+import java.util.Scanner;
+
+public class PrimeNumber {
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter an integer: ");
+        int n = sc.nextInt();
+
+        boolean prime = true;
+
+        if (n <= 1) {
+            prime = false;
+        } else {
+            for (int i = 2; i <= n / i; i++) {
+                if (n % i == 0) {
+                    prime = false;
+                    break;
+                }
+            }
+        }
+
+        if (prime) {
+            System.out.println(n + " is a Prime Number");
+        } else {
+            System.out.println(n + " is not a Prime Number");
+        }
+
+        sc.close();
+    }
+}
+
+2.Test the Java program manually
+javac PrimeNumber.java
+java PrimeNumber
+
+3.Install Git
+sudo apt update
+sudo apt install git -y
+git --version
+git config --global user.name "Your Name"
+git config --global user.email "your-email@gmail.com"
+
+4. create github repo
+  
+5.Upload Java source code to GitHub
+git init
+git add PrimeNumber.java
+git commit -m "Initial prime number program"
+git branch -M main
+git remote add origin https://github.com/YOUR_USERNAME/PrimeNumber.git
+git push -u origin main
+
+6.Install and configure Jenkins
+sudo apt update
+sudo apt install openjdk-21-jdk -y
+java -version
+javac -version
+sudo mkdir -p /etc/apt/keyrings
+sudo wget -O /etc/apt/keyrings/jenkins-keyring.asc https://pkg.jenkins.io/debian-stable/jenkins.io-2026.key
+echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/" | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
+sudo apt update
+sudo apt install jenkins -y
+sudo systemctl enable jenkins
+sudo systemctl start jenkins
+sudo systemctl status jenkins
+
+7.Open Jenkins in the browser
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+
+8: Install the required Jenkins plugins
+Open Jenkins Dashboard.
+Click Manage Jenkins.
+Click Plugins.
+Open the Available plugins tab.
+Search for and install:git,github,pipeline
+
+9: Configure Java in Jenkins
+Go to Jenkins Dashboard.
+Click Manage Jenkins.
+Click Tools.
+Find JDK installations.
+Click Add JDK.
+Enter details
+
+10: Create a Jenkins Pipeline job
+12: Create the Jenkinsfile
+cd ~/PrimeNumber
+nano Jenkinsfile
+
+pipeline {
+    agent any
+
+    tools {
+        jdk 'JDK21'
+    }
+
+    stages {
+
+        stage('Source Code Checkout') {
+            steps {
+                echo 'Checking out source code from GitHub'
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Compiling Java program'
+
+                sh 'javac PrimeNumber.java'
+
+                echo 'Executing Java program'
+
+                sh 'echo 7 | java PrimeNumber'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Build completed successfully!'
+        }
+
+        failure {
+            echo 'Build failed!'
+        }
+    }
+}
+13: Upload the Jenkinsfile to GitHub
+git add Jenkinsfile
+git commit -m "Add Jenkins CI pipeline"
+  git push origin main
