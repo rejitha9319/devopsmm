@@ -75,3 +75,54 @@ pipeline {
 }
 
 http://localhost:8080 
+
+
+
+
+
+
+
+
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/USERNAME/REPOSITORY.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'javac Program.java'
+            }
+        }
+
+        stage('Test / Execute') {
+            steps {
+                sh 'echo 5 | java Program'
+            }
+        }
+
+        stage('Package') {
+            steps {
+                sh 'jar cfe Program.jar Program Program.class'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh 'mkdir -p deployment'
+                sh 'cp Program.jar deployment/'
+            }
+        }
+
+        stage('Run Deployed Application') {
+            steps {
+                sh 'echo 5 | java -jar deployment/Program.jar'
+            }
+        }
+    }
+}
